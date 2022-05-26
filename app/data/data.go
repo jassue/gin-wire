@@ -56,9 +56,13 @@ func NewDB(conf *config.Configuration, gLog *zap.Logger) *gorm.DB {
 
     // 是否启用日志文件
     if conf.Database.EnableFileLogWriter {
+        logFileDir := conf.Log.RootDir
+        if !filepath.IsAbs(logFileDir) {
+            logFileDir = filepath.Join(utils.RootPath(), logFileDir)
+        }
         // 自定义 Writer
         writer = &lumberjack.Logger{
-            Filename:   filepath.Join(utils.RootPath(), conf.Log.RootDir, conf.Database.LogFilename),
+            Filename:   filepath.Join(logFileDir, conf.Database.LogFilename),
             MaxSize:    conf.Log.MaxSize,
             MaxBackups: conf.Log.MaxBackups,
             MaxAge:     conf.Log.MaxAge,
@@ -101,15 +105,10 @@ func NewDB(conf *config.Configuration, gLog *zap.Logger) *gorm.DB {
         conf.Database.Database,
         conf.Database.Charset,
         )
-    mysqlConfig := mysql.Config{
-        DSN:                       dsn,   // DSN data source name
-        DefaultStringSize:         191,   // string 类型字段的默认长度
-        DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
-        DontSupportRenameIndex:    true,  // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
-        DontSupportRenameColumn:   true,  // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
-        SkipInitializeWithVersion: false, // 根据版本自动配置
-    }
-    if db, err := gorm.Open(mysql.New(mysqlConfig), &gorm.Config{
+    if db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+        //NamingStrategy: schema.NamingStrategy{
+            //SingularTable: true,
+        //},
         DisableForeignKeyConstraintWhenMigrating: true, // 禁用自动创建外键约束
         Logger: newLogger, // 使用自定义 Logger
     }); err != nil {
@@ -132,8 +131,9 @@ func NewRedis(c *config.Configuration, gLog *zap.Logger) *redis.Client {
     })
 
     client.AddHook(redisotel.TracingHook{})
-    if err := client.Close(); err != nil {
+    if err := client.Ping(context.Background()).Err(); err != nil {
         gLog.Error("redis connect failed, err:", zap.Any("err", err))
+        panic("failed to connect redis")
     }
 
     return client

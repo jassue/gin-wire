@@ -12,8 +12,8 @@ import (
 type App struct {
     conf *config.Configuration
     logger *zap.Logger
-    httpServer *http.Server
-    cronServer *cron.Cron
+    httpSrv *http.Server
+    cronSrv *cron.Cron
     cxt context.Context
 }
 
@@ -36,8 +36,8 @@ func newApp(
     return &App{
         conf: conf,
         logger: logger,
-        httpServer: httpSrv,
-        cronServer: cronSrv,
+        httpSrv: httpSrv,
+        cronSrv: cronSrv,
         cxt: context.Background(),
     }
 }
@@ -46,7 +46,7 @@ func (a *App) Run() error {
     // 启动 http server
     go func() {
         a.logger.Info("http server started")
-        if err := a.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+        if err := a.httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
             panic(err)
         }
     }()
@@ -54,7 +54,7 @@ func (a *App) Run() error {
     // 启动 cron server
     go func() {
         a.logger.Info("cron server started")
-        if err := a.cronServer.Run(); err != nil {
+        if err := a.cronSrv.Run(); err != nil {
             panic(err)
         }
     }()
@@ -65,13 +65,13 @@ func (a *App) Run() error {
 func (a *App) Stop(ctx context.Context) error {
     // 关闭 http server
     a.logger.Info("http server has been stop")
-    if err := a.httpServer.Shutdown(ctx); err != nil {
+    if err := a.httpSrv.Shutdown(ctx); err != nil {
         return err
     }
 
     // 关闭 cron server
     a.logger.Info("cron server has been stop")
-    if err := a.cronServer.Stop(ctx); err != nil {
+    if err := a.cronSrv.Stop(ctx); err != nil {
         return err
     }
 

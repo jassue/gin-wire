@@ -117,7 +117,11 @@ func initConfig() {
 func initLogger() {
     var level zapcore.Level // zap 日志等级
     var options []zap.Option // zap 配置项
-    logFileDir := filepath.Join(rootPath, conf.Log.RootDir)
+
+    logFileDir := conf.Log.RootDir
+    if !filepath.IsAbs(logFileDir) {
+        logFileDir = filepath.Join(rootPath, logFileDir)
+    }
 
     if ok, _ := utils.PathExists(logFileDir); !ok {
         _ = os.Mkdir(conf.Log.RootDir, os.ModePerm)

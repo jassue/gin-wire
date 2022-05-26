@@ -1,6 +1,8 @@
 package model
 
-import "github.com/jassue/gin-wire/app/domain"
+import (
+    "github.com/jassue/gin-wire/app/domain"
+)
 
 type Media struct {
     U64ID

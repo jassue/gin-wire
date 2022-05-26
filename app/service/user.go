@@ -28,8 +28,8 @@ func NewUserService(uRepo UserRepo, tm Transaction) *UserService {
 
 // Register 注册
 func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*domain.User, error) {
-    _, err := s.uRepo.FindByMobile(ctx, param.Mobile)
-    if err != nil {
+    user, _ := s.uRepo.FindByMobile(ctx, param.Mobile)
+    if user != nil {
         return nil, cErr.BadRequest("手机号码已存在")
     }
 
@@ -38,6 +38,9 @@ func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*doma
         Mobile:   param.Mobile,
         Password: utils.BcryptMake([]byte(param.Password)),
     })
+    if err != nil {
+        return nil, cErr.BadRequest("注册用户失败")
+    }
 
     return u, nil
 }

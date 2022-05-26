@@ -2,11 +2,13 @@ package compo
 
 import (
     "github.com/jassue/gin-wire/config"
+    "github.com/jassue/gin-wire/utils"
     "github.com/jassue/go-storage/kodo"
     "github.com/jassue/go-storage/local"
     "github.com/jassue/go-storage/oss"
     "github.com/jassue/go-storage/storage"
     "go.uber.org/zap"
+    "path/filepath"
 )
 
 type Storage struct {
@@ -20,6 +22,9 @@ func NewStorage(c *config.Configuration, log *zap.Logger) *Storage {
         panic("disk config error")
     }
 
+    if !filepath.IsAbs(c.Storage.Disks.Local.RootDir) {
+        c.Storage.Disks.Local.RootDir = filepath.Join(utils.RootPath(), c.Storage.Disks.Local.RootDir)
+    }
     _, _ = local.Init(c.Storage.Disks.Local)
     _, _ = kodo.Init(c.Storage.Disks.QiNiu)
     _, _ = oss.Init(c.Storage.Disks.AliOss)

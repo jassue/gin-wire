@@ -71,6 +71,7 @@ func (s *MediaService) SaveImage(ctx *gin.Context, params *request.ImageUpload) 
     if err != nil {
         return nil, cErr.BadRequest("上传失败")
     }
+    m.Url = disk.Url(key)
 
     return m, nil
 }

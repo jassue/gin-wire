@@ -30,7 +30,7 @@ func (r *jwtRepo) JoinBlackList(ctx context.Context, tokenStr string, joinUnix i
 }
 
 func (r *jwtRepo) GetBlackJoinUnix(ctx context.Context, tokenStr string) (int64, error) {
-    joinUnixStr, err := r.data.rdb.Get(ctx, tokenStr).Result()
+    joinUnixStr, err := r.data.rdb.Get(ctx, r.getBlackListKey(tokenStr)).Result()
     if err != nil {
         return 0, err
     }
