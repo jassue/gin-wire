@@ -108,6 +108,12 @@ func initConfig() {
     v.WatchConfig()
     v.OnConfigChange(func(in fsnotify.Event) {
         fmt.Println("config file changed:", in.Name)
+        defer func() {
+            if err := recover(); err != nil {
+                logger.Error("config file changed err:", zap.Any("err", err))
+                fmt.Println(err)
+            }
+        }()
         if err := v.Unmarshal(&conf); err != nil {
             fmt.Println(err)
         }
