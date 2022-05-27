@@ -3,6 +3,7 @@ package data
 import (
     "context"
     "encoding/json"
+    "github.com/jassue/gin-wire/app/compo"
     "github.com/jassue/gin-wire/app/domain"
     "github.com/jassue/gin-wire/app/model"
     "github.com/jassue/gin-wire/app/service"
@@ -16,16 +17,18 @@ const mediaCacheKeyPre = "media:"
 type mediaRepo struct {
     data *Data
     log *zap.Logger
+    storage *compo.Storage
 }
 
-func NewMediaRepo(data *Data, log *zap.Logger) service.MediaRepo {
+func NewMediaRepo(data *Data, log *zap.Logger, storage *compo.Storage) service.MediaRepo {
     return &mediaRepo{
         data: data,
         log: log,
+        storage: storage,
     }
 }
 
-func (r *mediaRepo) Create(ctx context.Context, u *domain.Media) (*domain.Media, error) {
+func (r *mediaRepo) Create(ctx context.Context, dm *domain.Media) (*domain.Media, error) {
     var m model.Media
 
     id, err := r.data.sf.NextID()
@@ -34,15 +37,16 @@ func (r *mediaRepo) Create(ctx context.Context, u *domain.Media) (*domain.Media,
     }
 
     m.ID = id
-    m.DiskType = u.DiskType
-    m.SrcType = u.SrcType
-    m.Src = u.Src
+    m.DiskType = dm.DiskType
+    m.SrcType = dm.SrcType
+    m.Src = dm.Src
 
     if err = r.data.DB(ctx).Create(&m).Error; err != nil {
         return nil, err
     }
+    dm.ID = m.ID
 
-    return m.ToDomain(), nil
+    return dm, nil
 }
 
 func (r *mediaRepo) FindByID(ctx context.Context, id uint64) (*domain.Media, error) {
@@ -50,7 +54,11 @@ func (r *mediaRepo) FindByID(ctx context.Context, id uint64) (*domain.Media, err
     if err := r.data.db.First(&m, id).Error; err != nil{
         return nil, err
     }
-    return m.ToDomain(), nil
+
+    dm := m.ToDomain()
+    dm.SetUrl(r.storage)
+
+    return dm, nil
 }
 
 func (r *mediaRepo) FindCacheByID(ctx context.Context, id uint64) (*domain.Media, error) {
@@ -76,13 +84,14 @@ func (r *mediaRepo) FindCacheByID(ctx context.Context, id uint64) (*domain.Media
     if err != nil {
         return nil, err
     }
-    dMedia := media.ToDomain()
-    v, err := json.Marshal(dMedia)
+    dm := media.ToDomain()
+    dm.SetUrl(r.storage)
+    v, err := json.Marshal(dm)
     if err != nil {
         return nil, err
     }
     r.data.rdb.Set(ctx, cacheKey, v, time.Second*3*24*3600)
 
-    return dMedia, nil
+    return dm, nil
 }
 
