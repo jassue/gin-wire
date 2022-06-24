@@ -1,0 +1,4 @@
+config.local.yaml
+config.prod.yaml
+!config.yaml
+!.gitignore

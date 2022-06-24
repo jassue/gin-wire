@@ -21,6 +21,7 @@
 │ 
 ├─bin  二进制文件目录
 ├─cmd  编译入口
+├─conf  配置文件
 ├─config  配置模型
 ├─router  路由
 ├─static  静态资源（允许外部访问）
@@ -29,8 +30,7 @@
 │  │  └─public  静态资源（允许外部访问）
 │  └─logs  日志目录
 │ 
-├─utils  工具函数
-└─config.yaml  配置文件
+└─utils  工具函数
 ```
 
 ### 运行

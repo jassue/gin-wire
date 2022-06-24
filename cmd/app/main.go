@@ -36,7 +36,7 @@ var (
 )
 
 func init() {
-    pflag.StringVarP(&configPath, "config", "", filepath.Join(rootPath, "config.yaml"), "config path, eg: --config config.yaml")
+    pflag.StringVarP(&configPath, "conf", "", filepath.Join(rootPath, "conf", "config.yaml"), "config path, eg: --conf config.yaml")
 
     cobra.OnInitialize(func() {
         initConfig()
@@ -91,8 +91,10 @@ func main() {
 
 func initConfig() {
     if !filepath.IsAbs(configPath) {
-        configPath = filepath.Join(rootPath, configPath)
+        configPath = filepath.Join(rootPath, "conf", configPath)
     }
+
+    fmt.Println("load config:" + configPath)
 
     v := viper.New()
     v.SetConfigFile(configPath)
