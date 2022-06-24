@@ -11,6 +11,7 @@ import (
     "github.com/jassue/gin-wire/app/cron"
     "github.com/jassue/gin-wire/app/data"
     "github.com/jassue/gin-wire/app/handler"
+    "github.com/jassue/gin-wire/app/middleware"
     "github.com/jassue/gin-wire/app/service"
     "github.com/jassue/gin-wire/config"
     "github.com/jassue/gin-wire/router"
@@ -20,7 +21,7 @@ import (
 
 // wireApp init application.
 func wireApp(*config.Configuration, *lumberjack.Logger, *zap.Logger) (*App, func(), error) {
-    panic(wire.Build(data.ProviderSet, compo.ProviderSet, service.ProviderSet, handler.ProviderSet, router.ProviderSet, cron.ProviderSet, newHttpServer, newApp))
+    panic(wire.Build(data.ProviderSet, compo.ProviderSet, service.ProviderSet, handler.ProviderSet, middleware.ProviderSet, router.ProviderSet, cron.ProviderSet, newHttpServer, newApp))
 }
 
 // wireCommand init application.

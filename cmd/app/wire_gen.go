@@ -14,6 +14,7 @@ import (
 	"github.com/jassue/gin-wire/app/data"
 	"github.com/jassue/gin-wire/app/handler/app"
 	"github.com/jassue/gin-wire/app/handler/common"
+	"github.com/jassue/gin-wire/app/middleware"
 	"github.com/jassue/gin-wire/app/service"
 	"github.com/jassue/gin-wire/config"
 	"github.com/jassue/gin-wire/router"
@@ -38,12 +39,13 @@ func wireApp(configuration *config.Configuration, lumberjackLogger *lumberjack.L
 	userService := service.NewUserService(userRepo, transaction)
 	lockBuilder := compo.NewLockBuilder(client)
 	jwtService := service.NewJwtService(configuration, zapLogger, jwtRepo, userService, lockBuilder)
+	jwtAuth := middleware.NewJWTAuthM(configuration, jwtService)
 	authHandler := app.NewAuthHandler(zapLogger, jwtService, userService)
 	storage := compo.NewStorage(configuration, zapLogger)
 	mediaRepo := data.NewMediaRepo(dataData, zapLogger, storage)
 	mediaService := service.NewMediaService(configuration, zapLogger, mediaRepo, storage)
 	uploadHandler := common.NewUploadHandler(zapLogger, mediaService)
-	engine := router.NewRouter(configuration, lumberjackLogger, jwtService, authHandler, uploadHandler)
+	engine := router.NewRouter(configuration, lumberjackLogger, jwtAuth, authHandler, uploadHandler)
 	server := newHttpServer(configuration, engine)
 	exampleJob := cron.NewExampleJob(zapLogger)
 	cronCron := cron.NewCron(dataData, zapLogger, exampleJob)

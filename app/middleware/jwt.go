@@ -12,7 +12,22 @@ import (
     "time"
 )
 
-func JWTAuth(conf *config.Jwt, jwtS *service.JwtService, guardName string) gin.HandlerFunc {
+type JWTAuth struct {
+    conf *config.Configuration
+    jwtS *service.JwtService
+}
+
+func NewJWTAuthM(
+    conf *config.Configuration,
+    jwtS *service.JwtService,
+    ) *JWTAuth {
+    return &JWTAuth{
+        conf: conf,
+        jwtS: jwtS,
+    }
+}
+
+func (m *JWTAuth) Handler(guardName string) gin.HandlerFunc {
     return func(c *gin.Context) {
         tokenStr := c.Request.Header.Get("Authorization")
         if tokenStr == "" {
@@ -23,9 +38,9 @@ func JWTAuth(conf *config.Jwt, jwtS *service.JwtService, guardName string) gin.H
         tokenStr = tokenStr[len(domain.TokenType)+1:]
 
         token, err := jwt.ParseWithClaims(tokenStr, &domain.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
-            return []byte(conf.Secret), nil
+            return []byte(m.conf.Jwt.Secret), nil
         })
-        if err != nil || jwtS.IsInBlacklist(c, tokenStr) {
+        if err != nil || m.jwtS.IsInBlacklist(c, tokenStr) {
             response.FailByErr(c, cErr.Unauthorized("登录授权已失效"))
             c.Abort()
             return
@@ -39,8 +54,8 @@ func JWTAuth(conf *config.Jwt, jwtS *service.JwtService, guardName string) gin.H
         }
 
         // token 续签
-        if claims.ExpiresAt-time.Now().Unix() < conf.RefreshGracePeriod {
-            tokenData, err := jwtS.RefreshToken(c, guardName, token)
+        if claims.ExpiresAt-time.Now().Unix() < m.conf.Jwt.RefreshGracePeriod {
+            tokenData, err := m.jwtS.RefreshToken(c, guardName, token)
             if err == nil {
                 c.Header("new-token", tokenData.AccessToken)
                 c.Header("new-expires-in", strconv.Itoa(tokenData.ExpiresIn))

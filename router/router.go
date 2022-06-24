@@ -6,7 +6,6 @@ import (
     "github.com/jassue/gin-wire/app/handler/app"
     "github.com/jassue/gin-wire/app/handler/common"
     "github.com/jassue/gin-wire/app/middleware"
-    "github.com/jassue/gin-wire/app/service"
     "github.com/jassue/gin-wire/config"
     "github.com/jassue/gin-wire/utils"
     "gopkg.in/natefinch/lumberjack.v2"
@@ -19,7 +18,7 @@ var ProviderSet = wire.NewSet(NewRouter)
 func NewRouter(
     conf *config.Configuration,
     loggerWriter *lumberjack.Logger,
-    jwtS *service.JwtService,
+    jwtAuthM *middleware.JWTAuth,
     authH *app.AuthHandler,
     commonH *common.UploadHandler,
     ) *gin.Engine {
@@ -42,7 +41,7 @@ func NewRouter(
     router.Static("/storage", filepath.Join(rootDir, "storage/app/public"))
 
     // 注册 api 分组路由
-    setApiGroupRoutes(router, conf, jwtS, authH, commonH)
+    setApiGroupRoutes(router, jwtAuthM, authH, commonH)
 
     return router
 }
