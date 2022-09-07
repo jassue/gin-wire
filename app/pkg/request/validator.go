@@ -3,6 +3,7 @@ package request
 import (
    "github.com/go-playground/validator/v10"
    cErr "github.com/jassue/gin-wire/app/pkg/error"
+   "regexp"
 )
 
 type Validator interface {
@@ -10,6 +11,8 @@ type Validator interface {
 }
 
 type ValidatorMessages map[string]string
+
+var reg = regexp.MustCompile(`\[\d\]`)
 
 // GetError 获取验证错误
 func GetError(request interface{}, err error) *cErr.Error {
@@ -19,7 +22,9 @@ func GetError(request interface{}, err error) *cErr.Error {
       for _, v := range err.(validator.ValidationErrors) {
          // 若 request 结构体实现 Validator 接口即可实现自定义错误信息
          if isValidator {
-            if message, exist := request.(Validator).GetMessages()[v.Field() + "." + v.Tag()]; exist {
+            field := v.Field()
+            field = reg.ReplaceAllString(field, ".*")
+            if message, exist := request.(Validator).GetMessages()[field + "." + v.Tag()]; exist {
                return cErr.ValidateErr(message)
             }
          }
