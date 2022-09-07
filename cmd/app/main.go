@@ -8,7 +8,8 @@ import (
     "github.com/go-playground/validator/v10"
     "github.com/jassue/gin-wire/app/command"
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils"
+    "github.com/jassue/gin-wire/utils/path"
+    validator2 "github.com/jassue/gin-wire/utils/validator"
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
@@ -26,7 +27,7 @@ import (
 )
 
 var (
-    rootPath = utils.RootPath()
+    rootPath = path.RootPath()
 
     Version string
     configPath string
@@ -69,7 +70,7 @@ func main() {
             log.Printf("shutdown app %s ...", Version)
 
             // 设置 5 秒的超时时间
-            ctx, cancel := context.WithTimeout(app.cxt, 5*time.Second)
+            ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
             defer cancel()
 
             // 关闭应用
@@ -131,7 +132,7 @@ func initLogger() {
         logFileDir = filepath.Join(rootPath, logFileDir)
     }
 
-    if ok, _ := utils.PathExists(logFileDir); !ok {
+    if ok, _ := path.Exists(logFileDir); !ok {
         _ = os.Mkdir(conf.Log.RootDir, os.ModePerm)
     }
 
@@ -157,20 +158,12 @@ func initLogger() {
     }
 
     // 调整编码器默认配置
-    var encoder zapcore.Encoder
     encoderConfig := zap.NewProductionEncoderConfig()
     encoderConfig.EncodeTime = func(time time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-        encoder.AppendString(time.Format("[" + "2006-01-02 15:04:05.000" + "]"))
+        encoder.AppendString(time.Format("2006-01-02 15:04:05.000"))
     }
     encoderConfig.EncodeLevel = func(l zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
         encoder.AppendString(conf.App.Env + "." + l.String())
-    }
-
-    // 设置编码器
-    if conf.Log.Format == "json" {
-        encoder = zapcore.NewJSONEncoder(encoderConfig)
-    } else {
-        encoder = zapcore.NewConsoleEncoder(encoderConfig)
     }
 
     loggerWriter = &lumberjack.Logger{
@@ -181,13 +174,13 @@ func initLogger() {
         Compress:   conf.Log.Compress,
     }
 
-    logger = zap.New(zapcore.NewCore(encoder, zapcore.AddSync(loggerWriter), level), options...)
+    logger = zap.New(zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(loggerWriter), level), options...)
 }
 
 func initValidator() {
     if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
         // 注册自定义验证器
-        _ = v.RegisterValidation("mobile", utils.ValidateMobile)
+        _ = v.RegisterValidation("mobile", validator2.ValidateMobile)
 
         // 注册自定义 json tag 函数
         v.RegisterTagNameFunc(func(fld reflect.StructField) string {

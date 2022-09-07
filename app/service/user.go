@@ -6,7 +6,7 @@ import (
     "github.com/jassue/gin-wire/app/domain"
     cErr "github.com/jassue/gin-wire/app/pkg/error"
     "github.com/jassue/gin-wire/app/pkg/request"
-    "github.com/jassue/gin-wire/utils"
+    "github.com/jassue/gin-wire/utils/hash"
     "strconv"
 )
 
@@ -36,7 +36,7 @@ func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*doma
     u, err := s.uRepo.Create(ctx, &domain.User{
         Name:     param.Name,
         Mobile:   param.Mobile,
-        Password: utils.BcryptMake([]byte(param.Password)),
+        Password: hash.BcryptMake([]byte(param.Password)),
     })
     if err != nil {
         return nil, cErr.BadRequest("注册用户失败")
@@ -48,7 +48,7 @@ func (s *UserService) Register(ctx *gin.Context, param *request.Register) (*doma
 // Login 登录
 func (s *UserService) Login(ctx *gin.Context, mobile, password string) (*domain.User, error) {
     u, err := s.uRepo.FindByMobile(ctx, mobile)
-    if err != nil || !utils.BcryptMakeCheck([]byte(password), u.Password) {
+    if err != nil || !hash.BcryptMakeCheck([]byte(password), u.Password) {
         return nil, cErr.BadRequest("用户名不存在或密码错误")
     }
 

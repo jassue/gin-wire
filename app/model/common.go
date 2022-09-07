@@ -5,10 +5,6 @@ import (
     "time"
 )
 
-type U64ID struct {
-    ID uint64 `gorm:"primaryKey"`
-}
-
 type Timestamps struct {
     CreatedAt time.Time `gorm:"column:created_at"`
     UpdatedAt time.Time `gorm:"column:updated_at"`

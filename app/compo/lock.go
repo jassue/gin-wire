@@ -3,7 +3,7 @@ package compo
 import (
     "context"
     "github.com/go-redis/redis/v8"
-    "github.com/jassue/gin-wire/utils"
+    "github.com/jassue/gin-wire/utils/str"
     "time"
 )
 
@@ -20,7 +20,7 @@ func (lb *LockBuilder) NewLock(ctx context.Context, name string, seconds int64) 
     return &redisLock{
         ctx,
         name,
-        utils.RandString(16),
+        str.RandString(16),
         seconds,
         lb.rdb,
     }

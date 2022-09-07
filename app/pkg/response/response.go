@@ -4,7 +4,6 @@ import (
     "github.com/gin-gonic/gin"
     cErr "github.com/jassue/gin-wire/app/pkg/error"
     "net/http"
-    "os"
 )
 
 type Response struct {
@@ -15,7 +14,7 @@ type Response struct {
 
 func ServerError(c *gin.Context, err interface{}) {
     msg := "Internal Server Error"
-    if os.Getenv(gin.EnvGinMode) != gin.ReleaseMode {
+    if gin.Mode() != gin.ReleaseMode {
         if _, ok := err.(error); ok {
             msg = err.(error).Error()
         }

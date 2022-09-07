@@ -1,4 +1,4 @@
-package utils
+package path
 
 import (
     "os"
@@ -18,13 +18,27 @@ func RootPath() string {
 
     rootDir = filepath.Dir(filepath.Dir(exePath))
 
+
+
     tmpDir := os.TempDir()
     if strings.Contains(exePath, tmpDir) {
         _, filename, _, ok := runtime.Caller(0)
         if ok {
-            rootDir = filepath.Dir(filepath.Dir(filename))
+            rootDir = filepath.Dir(filepath.Dir(filepath.Dir(filename)))
         }
     }
 
     return rootDir
+}
+
+// Exists 路径是否存在
+func Exists(path string) (bool, error) {
+    _, err := os.Stat(path)
+    if err == nil {
+        return true, nil
+    }
+    if os.IsNotExist(err) {
+        return false, nil
+    }
+    return false, err
 }

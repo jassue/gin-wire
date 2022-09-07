@@ -5,7 +5,14 @@ import (
     "github.com/gin-gonic/gin"
 )
 
-func Cors() gin.HandlerFunc {
+type Cors struct {
+}
+
+func NewCorsM() *Cors {
+    return &Cors{}
+}
+
+func (m *Cors) Handler() gin.HandlerFunc {
     config := cors.DefaultConfig()
     config.AllowAllOrigins = true
     config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}

@@ -14,7 +14,6 @@ type App struct {
     logger *zap.Logger
     httpSrv *http.Server
     cronSrv *cron.Cron
-    cxt context.Context
 }
 
 func newHttpServer(
@@ -38,7 +37,6 @@ func newApp(
         logger: logger,
         httpSrv: httpSrv,
         cronSrv: cronSrv,
-        cxt: context.Background(),
     }
 }
 

@@ -3,7 +3,7 @@ package domain
 import "github.com/golang-jwt/jwt"
 
 const (
-    TokenType = "bearer"
+    TokenType = "Bearer"
     AppGuardName = "app"
 )
 

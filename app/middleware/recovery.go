@@ -6,8 +6,19 @@ import (
     "gopkg.in/natefinch/lumberjack.v2"
 )
 
-func CustomRecovery(loggerWriter *lumberjack.Logger) gin.HandlerFunc {
+type Recovery struct {
+    loggerWriter *lumberjack.Logger
+}
+
+func NewRecoveryM(loggerWriter *lumberjack.Logger) *Recovery {
+    return &Recovery{
+        loggerWriter: loggerWriter,
+    }
+}
+
+func (m *Recovery) Handler() gin.HandlerFunc {
     return gin.RecoveryWithWriter(
-        loggerWriter,
-        response.ServerError)
+        m.loggerWriter,
+        response.ServerError,
+        )
 }

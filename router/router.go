@@ -7,8 +7,7 @@ import (
     "github.com/jassue/gin-wire/app/handler/common"
     "github.com/jassue/gin-wire/app/middleware"
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils"
-    "gopkg.in/natefinch/lumberjack.v2"
+    "github.com/jassue/gin-wire/utils/path"
     "path/filepath"
 )
 
@@ -17,8 +16,9 @@ var ProviderSet = wire.NewSet(NewRouter)
 
 func NewRouter(
     conf *config.Configuration,
-    loggerWriter *lumberjack.Logger,
     jwtAuthM *middleware.JWTAuth,
+    recoveryM *middleware.Recovery,
+    corsM *middleware.Cors,
     authH *app.AuthHandler,
     commonH *common.UploadHandler,
     ) *gin.Engine {
@@ -26,12 +26,12 @@ func NewRouter(
         gin.SetMode(gin.ReleaseMode)
     }
     router := gin.New()
-    router.Use(gin.Logger(), middleware.CustomRecovery(loggerWriter))
+    router.Use(gin.Logger(), recoveryM.Handler())
 
     // 跨域处理
-    //router.Use(middleware.Cors())
+    router.Use(corsM.Handler())
 
-    rootDir := utils.RootPath()
+    rootDir := path.RootPath()
     // 前端项目静态资源
     router.StaticFile("/", filepath.Join(rootDir, "static/dist/index.html"))
     router.Static("/assets", filepath.Join(rootDir, "static/dist/assets"))

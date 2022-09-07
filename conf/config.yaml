@@ -8,8 +8,6 @@ log:
   level: 'info'
   root_dir: 'storage/logs'
   filename: 'app.log'
-  format: ''
-  show_line: true
   max_backups: 3
   max_size: 500
   max_age: 28

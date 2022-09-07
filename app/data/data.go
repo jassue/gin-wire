@@ -8,7 +8,7 @@ import (
     "github.com/google/wire"
     "github.com/jassue/gin-wire/app/service"
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils"
+    "github.com/jassue/gin-wire/utils/path"
     "github.com/sony/sonyflake"
     "go.uber.org/zap"
     "gopkg.in/natefinch/lumberjack.v2"
@@ -58,7 +58,7 @@ func NewDB(conf *config.Configuration, gLog *zap.Logger) *gorm.DB {
     if conf.Database.EnableFileLogWriter {
         logFileDir := conf.Log.RootDir
         if !filepath.IsAbs(logFileDir) {
-            logFileDir = filepath.Join(utils.RootPath(), logFileDir)
+            logFileDir = filepath.Join(path.RootPath(), logFileDir)
         }
         // 自定义 Writer
         writer = &lumberjack.Logger{

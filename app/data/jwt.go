@@ -3,7 +3,7 @@ package data
 import (
     "context"
     "github.com/jassue/gin-wire/app/service"
-    "github.com/jassue/gin-wire/utils"
+    "github.com/jassue/gin-wire/utils/hash"
     "go.uber.org/zap"
     "strconv"
     "time"
@@ -22,7 +22,7 @@ func NewJwtRepo(data *Data, log *zap.Logger) service.JwtRepo {
 }
 
 func (r *jwtRepo) getBlackListKey(tokenStr string) string {
-    return "jwt_black_list:" + utils.MD5([]byte(tokenStr))
+    return "jwt_black_list:" + hash.MD5([]byte(tokenStr))
 }
 
 func (r *jwtRepo) JoinBlackList(ctx context.Context, tokenStr string, joinUnix int64, expires time.Duration) error {
