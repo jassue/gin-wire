@@ -8,10 +8,10 @@ type Register struct {
 
 func (register Register) GetMessages() ValidatorMessages {
     return ValidatorMessages{
-        "name.required": "用户名称不能为空",
-        "mobile.required": "手机号码不能为空",
-        "mobile.mobile": "手机号码格式不正确",
-        "password.required": "用户密码不能为空",
+        "Name.required": "用户名称不能为空",
+        "Mobile.required": "手机号码不能为空",
+        "Mobile.mobile": "手机号码格式不正确",
+        "Password.required": "用户密码不能为空",
     }
 }
 
@@ -22,8 +22,8 @@ type Login struct {
 
 func (login Login) GetMessages() ValidatorMessages {
     return ValidatorMessages{
-        "mobile.required": "手机号码不能为空",
-        "mobile.mobile": "手机号码格式不正确",
-        "password.required": "用户密码不能为空",
+        "Mobile.required": "手机号码不能为空",
+        "Mobile.mobile": "手机号码格式不正确",
+        "Password.required": "用户密码不能为空",
     }
 }

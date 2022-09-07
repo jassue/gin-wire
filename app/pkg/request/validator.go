@@ -22,7 +22,7 @@ func GetError(request interface{}, err error) *cErr.Error {
       for _, v := range err.(validator.ValidationErrors) {
          // 若 request 结构体实现 Validator 接口即可实现自定义错误信息
          if isValidator {
-            field := v.Field()
+            field := v.Field() // 取 request 结构体字段的 'vn' tag 值，未设置 tag 则默认为字段名
             field = reg.ReplaceAllString(field, ".*")
             if message, exist := request.(Validator).GetMessages()[field + "." + v.Tag()]; exist {
                return cErr.ValidateErr(message)

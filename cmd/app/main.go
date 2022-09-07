@@ -182,9 +182,10 @@ func initValidator() {
         // 注册自定义验证器
         _ = v.RegisterValidation("mobile", validator2.ValidateMobile)
 
-        // 注册自定义 json tag 函数
+        // 注册自定义 tag 函数
         v.RegisterTagNameFunc(func(fld reflect.StructField) string {
-            name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+            // 'vn' tag - ValidatorMessages key name
+            name := strings.SplitN(fld.Tag.Get("vn"), ",", 2)[0]
             if name == "-" {
                 return ""
             }
