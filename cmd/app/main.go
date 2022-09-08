@@ -4,12 +4,9 @@ import (
     "context"
     "fmt"
     "github.com/fsnotify/fsnotify"
-    "github.com/gin-gonic/gin/binding"
-    "github.com/go-playground/validator/v10"
     "github.com/jassue/gin-wire/app/command"
     "github.com/jassue/gin-wire/config"
     "github.com/jassue/gin-wire/utils/path"
-    validator2 "github.com/jassue/gin-wire/utils/validator"
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"
@@ -20,8 +17,6 @@ import (
     "os"
     "os/signal"
     "path/filepath"
-    "reflect"
-    "strings"
     "syscall"
     "time"
 )
@@ -42,7 +37,6 @@ func init() {
     cobra.OnInitialize(func() {
         initConfig()
         initLogger()
-        initValidator()
     })
 }
 
@@ -175,21 +169,4 @@ func initLogger() {
     }
 
     logger = zap.New(zapcore.NewCore(zapcore.NewJSONEncoder(encoderConfig), zapcore.AddSync(loggerWriter), level), options...)
-}
-
-func initValidator() {
-    if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-        // 注册自定义验证器
-        _ = v.RegisterValidation("mobile", validator2.ValidateMobile)
-
-        // 注册自定义 tag 函数
-        v.RegisterTagNameFunc(func(fld reflect.StructField) string {
-            // 'vn' tag - ValidatorMessages key name
-            name := strings.SplitN(fld.Tag.Get("vn"), ",", 2)[0]
-            if name == "-" {
-                return ""
-            }
-            return name
-        })
-    }
 }

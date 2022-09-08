@@ -3,10 +3,15 @@ package main
 import (
     "context"
     "github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin/binding"
+    "github.com/go-playground/validator/v10"
     "github.com/jassue/gin-wire/app/cron"
     "github.com/jassue/gin-wire/config"
+    validator2 "github.com/jassue/gin-wire/utils/validator"
     "go.uber.org/zap"
     "net/http"
+    "reflect"
+    "strings"
 )
 
 type App struct {
@@ -20,6 +25,7 @@ func newHttpServer(
     conf *config.Configuration,
     router *gin.Engine,
     ) *http.Server {
+    initValidator()
     return &http.Server{
         Addr:    ":" + conf.App.Port,
         Handler: router,
@@ -37,6 +43,23 @@ func newApp(
         logger: logger,
         httpSrv: httpSrv,
         cronSrv: cronSrv,
+    }
+}
+
+func initValidator() {
+    if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+        // 注册自定义验证器
+        _ = v.RegisterValidation("mobile", validator2.ValidateMobile)
+
+        // 注册自定义 tag 函数
+        v.RegisterTagNameFunc(func(fld reflect.StructField) string {
+            // 'vn' tag - ValidatorMessages key name
+            name := strings.SplitN(fld.Tag.Get("vn"), ",", 2)[0]
+            if name == "-" {
+                return ""
+            }
+            return name
+        })
     }
 }
 
