@@ -7,6 +7,7 @@
 ├─app
 │  ├─command  命令行
 │  ├─compo  组件
+│  ├─consumer  MQ消费者
 │  ├─cron  定时任务
 │  ├─data  数据处理层
 │  ├─domain  领域模型
