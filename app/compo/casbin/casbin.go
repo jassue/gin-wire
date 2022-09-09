@@ -16,7 +16,7 @@ func NewEnforcer(db *gorm.DB) *casbin.Enforcer {
         panic(err)
     }
 
-    enforcer, err := casbin.NewEnforcer(filepath.Join(path.RootPath(), "app/compo/casbin/rbac_model.conf"), adapter)
+    enforcer, err := casbin.NewEnforcer(filepath.Join(path.RootPath(), "storage/rbac_model.conf"), adapter)
     if err != nil {
         panic(err)
     }
