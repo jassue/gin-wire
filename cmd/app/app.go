@@ -19,6 +19,7 @@ type App struct {
     logger *zap.Logger
     httpSrv *http.Server
     cronSrv *cron.Cron
+    //consumerSrv *consumer.Consumer
 }
 
 func newHttpServer(
@@ -37,12 +38,14 @@ func newApp(
     logger *zap.Logger,
     httpSrv *http.Server,
     cronSrv *cron.Cron,
+    //consumerSrv *consumer.Consumer,
 ) *App {
     return &App{
         conf: conf,
         logger: logger,
         httpSrv: httpSrv,
         cronSrv: cronSrv,
+        //consumerSrv: consumerSrv,
     }
 }
 
@@ -80,6 +83,14 @@ func (a *App) Run() error {
         }
     }()
 
+    // 启动 queue consumer
+    //go func() {
+    //   a.logger.Info("queue worker started")
+    //   if err := a.consumerSrv.Run(); err != nil {
+    //       panic(err)
+    //   }
+    //}()
+
     return nil
 }
 
@@ -95,6 +106,12 @@ func (a *App) Stop(ctx context.Context) error {
     if err := a.cronSrv.Stop(ctx); err != nil {
         return err
     }
+
+    // 关闭 queue consumer
+    //a.logger.Info("queue consumer has been stop")
+    //if err := a.consumerSrv.Stop(ctx); err != nil {
+    //   return err
+    //}
 
     return nil
 }

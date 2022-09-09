@@ -21,7 +21,20 @@ import (
 
 // wireApp init application.
 func wireApp(*config.Configuration, *lumberjack.Logger, *zap.Logger) (*App, func(), error) {
-    panic(wire.Build(data.ProviderSet, compo.ProviderSet, service.ProviderSet, handler.ProviderSet, middleware.ProviderSet, router.ProviderSet, cron.ProviderSet, newHttpServer, newApp))
+    panic(
+        wire.Build(
+            data.ProviderSet,
+            compo.ProviderSet,
+            service.ProviderSet,
+            handler.ProviderSet,
+            middleware.ProviderSet,
+            router.ProviderSet,
+            cron.ProviderSet,
+            //consumer.ProviderSet,
+            newHttpServer,
+            newApp,
+            ),
+        )
 }
 
 // wireCommand init application.
