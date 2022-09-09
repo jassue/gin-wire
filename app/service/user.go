@@ -6,7 +6,7 @@ import (
     "github.com/jassue/gin-wire/app/domain"
     cErr "github.com/jassue/gin-wire/app/pkg/error"
     "github.com/jassue/gin-wire/app/pkg/request"
-    "github.com/jassue/gin-wire/utils/hash"
+    "github.com/jassue/gin-wire/util/hash"
     "strconv"
 )
 

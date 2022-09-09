@@ -7,7 +7,7 @@ import (
     "github.com/jassue/gin-wire/app/handler/common"
     "github.com/jassue/gin-wire/app/middleware"
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils/path"
+    "github.com/jassue/gin-wire/util/path"
     "path/filepath"
 )
 

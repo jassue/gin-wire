@@ -2,7 +2,7 @@ package mq
 
 import (
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils/path"
+    "github.com/jassue/gin-wire/util/path"
     "go.uber.org/zap"
     "go.uber.org/zap/zapcore"
     "gopkg.in/natefinch/lumberjack.v2"

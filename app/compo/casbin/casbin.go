@@ -4,7 +4,7 @@ import (
     "github.com/casbin/casbin/util"
     "github.com/casbin/casbin/v2"
     gormadapter "github.com/casbin/gorm-adapter/v3"
-    "github.com/jassue/gin-wire/utils/path"
+    "github.com/jassue/gin-wire/util/path"
     "gorm.io/gorm"
     "path/filepath"
     "strings"

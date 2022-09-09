@@ -6,7 +6,7 @@ import (
     "github.com/fsnotify/fsnotify"
     "github.com/jassue/gin-wire/app/command"
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils/path"
+    "github.com/jassue/gin-wire/util/path"
     "github.com/spf13/cobra"
     "github.com/spf13/pflag"
     "github.com/spf13/viper"

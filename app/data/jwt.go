@@ -3,7 +3,7 @@ package data
 import (
     "context"
     "github.com/jassue/gin-wire/app/service"
-    "github.com/jassue/gin-wire/utils/hash"
+    "github.com/jassue/gin-wire/util/hash"
     "go.uber.org/zap"
     "strconv"
     "time"

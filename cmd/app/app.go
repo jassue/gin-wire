@@ -7,7 +7,7 @@ import (
     "github.com/go-playground/validator/v10"
     "github.com/jassue/gin-wire/app/cron"
     "github.com/jassue/gin-wire/config"
-    validator2 "github.com/jassue/gin-wire/utils/validator"
+    validator2 "github.com/jassue/gin-wire/util/validator"
     "go.uber.org/zap"
     "net/http"
     "reflect"

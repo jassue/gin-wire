@@ -2,7 +2,7 @@ package compo
 
 import (
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils/path"
+    "github.com/jassue/gin-wire/util/path"
     "github.com/jassue/go-storage/kodo"
     "github.com/jassue/go-storage/local"
     "github.com/jassue/go-storage/oss"

@@ -3,7 +3,7 @@ package compo
 import (
     "context"
     "github.com/go-redis/redis/v8"
-    "github.com/jassue/gin-wire/utils/str"
+    "github.com/jassue/gin-wire/util/str"
     "time"
 )
 

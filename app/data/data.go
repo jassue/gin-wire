@@ -8,7 +8,7 @@ import (
     "github.com/google/wire"
     "github.com/jassue/gin-wire/app/service"
     "github.com/jassue/gin-wire/config"
-    "github.com/jassue/gin-wire/utils/path"
+    "github.com/jassue/gin-wire/util/path"
     "github.com/sony/sonyflake"
     "go.uber.org/zap"
     "gopkg.in/natefinch/lumberjack.v2"
