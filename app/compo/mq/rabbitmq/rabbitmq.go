@@ -127,6 +127,7 @@ func (r *Sender) Send(ctx context.Context, msg event.Event) error {
         ContentType:     "application/json",
         Body:            msg.Value(),
         Timestamp:       time.Now(),
+        DeliveryMode:    amqp.Persistent, // 消息持久化
     }
     if msg.DelaySeconds() > 0 {
         publishing.Headers = amqp.Table{
