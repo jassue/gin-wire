@@ -20,7 +20,6 @@ func ServerError(c *gin.Context, err interface{}) {
         }
     }
     FailByErr(c, cErr.InternalServer(msg))
-    c.Abort()
 }
 
 func Success(c *gin.Context, data interface{}) {
@@ -29,6 +28,7 @@ func Success(c *gin.Context, data interface{}) {
         data,
         "ok",
     })
+    c.Abort()
 }
 
 func Fail(c *gin.Context, httpCode int, errorCode int, msg string) {
@@ -37,6 +37,7 @@ func Fail(c *gin.Context, httpCode int, errorCode int, msg string) {
         nil,
         msg,
     })
+    c.Abort()
 }
 
 func FailByErr(c *gin.Context, err error) {

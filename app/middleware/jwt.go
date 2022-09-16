@@ -32,7 +32,6 @@ func (m *JWTAuth) Handler(guardName string) gin.HandlerFunc {
         tokenStr := c.Request.Header.Get("Authorization")
         if tokenStr == "" {
             response.FailByErr(c, cErr.Unauthorized("missing Authorization header"))
-            c.Abort()
             return
         }
         tokenStr = tokenStr[len(domain.TokenType)+1:]
@@ -42,14 +41,12 @@ func (m *JWTAuth) Handler(guardName string) gin.HandlerFunc {
         })
         if err != nil || m.jwtS.IsInBlacklist(c, tokenStr) {
             response.FailByErr(c, cErr.Unauthorized("登录授权已失效"))
-            c.Abort()
             return
         }
 
         claims := token.Claims.(*domain.CustomClaims)
         if claims.Issuer != guardName {
             response.FailByErr(c, cErr.Unauthorized("登录授权已失效"))
-            c.Abort()
             return
         }
 
