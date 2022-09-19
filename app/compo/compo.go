@@ -17,4 +17,5 @@ var ProviderSet = wire.NewSet(
     rabbitmq.NewConnManager,
     rabbitmq.NewRabbitmqSender,
     rabbitmq.NewRabbitmqReceiver,
+    NewLimiterManager,
     )

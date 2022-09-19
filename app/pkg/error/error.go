@@ -52,6 +52,10 @@ func ValidateErr(errorMsg string) *Error {
     return New(http.StatusUnprocessableEntity, VALIDATE_ERROR, errorMsg)
 }
 
+func TooManyRequestsErr(errorMsg string) *Error {
+    return New(http.StatusTooManyRequests, TOO_MANY_REQUESTS, errorMsg)
+}
+
 func InternalServer(errorMsg string) *Error {
     return New(http.StatusInternalServerError, SERVER_ERROR, errorMsg)
 }

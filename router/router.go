@@ -19,6 +19,7 @@ func NewRouter(
     jwtAuthM *middleware.JWTAuth,
     recoveryM *middleware.Recovery,
     corsM *middleware.Cors,
+    limiterM *middleware.Limiter,
     authH *app.AuthHandler,
     commonH *common.UploadHandler,
     ) *gin.Engine {
@@ -30,6 +31,9 @@ func NewRouter(
 
     // 跨域处理
     router.Use(corsM.Handler())
+
+    // 限流处理
+    //router.Use(limiterM.Handler())
 
     rootDir := path.RootPath()
     // 前端项目静态资源
