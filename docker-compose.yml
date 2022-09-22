@@ -1,10 +1,10 @@
 version: "3.6"
 services:
-  gin-admin:
+  gin-app:
     build:
       context: ./
       dockerfile: Dockerfile
-    container_name: "gin-admin"
+    container_name: "gin-app"
     environment:
       - TZ=Asia/Shanghai
     ports:
