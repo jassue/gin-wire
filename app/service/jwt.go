@@ -2,8 +2,9 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/gin-gonic/gin"
-    "github.com/golang-jwt/jwt"
+    "github.com/golang-jwt/jwt/v4"
     "github.com/jassue/gin-wire/app/compo"
     "github.com/jassue/gin-wire/app/domain"
     cErr "github.com/jassue/gin-wire/app/pkg/error"
@@ -39,11 +40,12 @@ func (s *JwtService) CreateToken(GuardName string, user domain.JwtUser) (*domain
     token := jwt.NewWithClaims(
         jwt.SigningMethodHS256,
         domain.CustomClaims{
-            StandardClaims: jwt.StandardClaims{
-                ExpiresAt: time.Now().Unix() + s.conf.Jwt.JwtTtl,
-                Id:        user.GetUid(),
-                Issuer:    GuardName,
-                NotBefore: time.Now().Unix() - 1000,
+            Key:              GuardName,
+            RegisteredClaims: jwt.RegisteredClaims{
+                ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Second*time.Duration(s.conf.Jwt.JwtTtl))),
+                NotBefore: jwt.NewNumericDate(time.Now().Add(time.Second*-1000)),
+                IssuedAt:  jwt.NewNumericDate(time.Now()),
+                ID:        user.GetUid(),
             },
         },
     )
@@ -56,13 +58,13 @@ func (s *JwtService) CreateToken(GuardName string, user domain.JwtUser) (*domain
     return &domain.TokenOutPut{
         AccessToken: tokenStr,
         ExpiresIn:   int(s.conf.Jwt.JwtTtl),
-        TokenType:   domain.TokenType,
     }, token, nil
 }
 
 func (s *JwtService) JoinBlackList(ctx *gin.Context, token *jwt.Token) error {
     nowUnix := time.Now().Unix()
-    timer := time.Duration(token.Claims.(*domain.CustomClaims).ExpiresAt - nowUnix) * time.Second
+    timer := token.Claims.(*domain.CustomClaims).ExpiresAt.Sub(time.Now())
+    fmt.Println("JoinBlackList timer", timer)
 
     if err := s.jRepo.JoinBlackList(ctx, token.Raw, nowUnix, timer); err != nil {
         s.log.Error(err.Error())
@@ -94,7 +96,7 @@ func (s *JwtService) GetUserInfo(ctx *gin.Context, guardName, id string) (domain
 }
 
 func (s *JwtService) RefreshToken(ctx *gin.Context, guardName string, token *jwt.Token) (*domain.TokenOutPut, error) {
-    idStr := token.Claims.(*domain.CustomClaims).Id
+    idStr := token.Claims.(*domain.CustomClaims).ID
 
     lock := s.lockBuilder.NewLock(ctx, "refresh_token_lock:" + idStr, s.conf.Jwt.JwtBlacklistGracePeriod)
     if lock.Get() {

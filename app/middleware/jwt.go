@@ -2,7 +2,7 @@ package middleware
 
 import (
     "github.com/gin-gonic/gin"
-    "github.com/golang-jwt/jwt"
+    "github.com/golang-jwt/jwt/v4"
     "github.com/jassue/gin-wire/app/domain"
     cErr "github.com/jassue/gin-wire/app/pkg/error"
     "github.com/jassue/gin-wire/app/pkg/response"
@@ -34,7 +34,6 @@ func (m *JWTAuth) Handler(guardName string) gin.HandlerFunc {
             response.FailByErr(c, cErr.Unauthorized("missing Authorization header"))
             return
         }
-        tokenStr = tokenStr[len(domain.TokenType)+1:]
 
         token, err := jwt.ParseWithClaims(tokenStr, &domain.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
             return []byte(m.conf.Jwt.Secret), nil
@@ -51,7 +50,7 @@ func (m *JWTAuth) Handler(guardName string) gin.HandlerFunc {
         }
 
         // token 续签
-        if claims.ExpiresAt-time.Now().Unix() < m.conf.Jwt.RefreshGracePeriod {
+        if int64(claims.ExpiresAt.Sub(time.Now()).Seconds()) < m.conf.Jwt.RefreshGracePeriod {
             tokenData, err := m.jwtS.RefreshToken(c, guardName, token)
             if err == nil {
                 c.Header("new-token", tokenData.AccessToken)
@@ -60,6 +59,6 @@ func (m *JWTAuth) Handler(guardName string) gin.HandlerFunc {
         }
 
         c.Set("token", token)
-        c.Set("id", claims.Id)
+        c.Set("id", claims.ID)
     }
 }

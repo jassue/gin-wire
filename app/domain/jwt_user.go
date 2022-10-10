@@ -1,9 +1,8 @@
 package domain
 
-import "github.com/golang-jwt/jwt"
+import "github.com/golang-jwt/jwt/v4"
 
 const (
-    TokenType = "Bearer"
     AppGuardName = "app"
 )
 
@@ -13,11 +12,11 @@ type JwtUser interface {
 
 // CustomClaims 自定义 Claims
 type CustomClaims struct {
-    jwt.StandardClaims
+    Key string `json:"key,omitempty"`
+    jwt.RegisteredClaims
 }
 
 type TokenOutPut struct {
     AccessToken string `json:"access_token"`
     ExpiresIn int `json:"expires_in"`
-    TokenType string `json:"token_type"`
 }
